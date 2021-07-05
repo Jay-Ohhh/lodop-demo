@@ -53,6 +53,7 @@ export function DesignByPRGData () {
   if (LODOP.CVERSION) LODOP.On_Return = function (TaskID, Value) {
     LODOP.ADD_PRINT_DATA("ProgramData", Value); //装载模板
     LODOP.PRINT_DESIGN()
+    // LODOP.PREVIEW()
   };
 };
 // 打印包含样式
@@ -75,7 +76,7 @@ export function createAllPage ({ dataList, meta }) {
   for (let val of dataList) {
     //装载模板
     LODOP.ADD_PRINT_DATA("ProgramData", template); // 装载密文模板
-    // eval(example) // 执行明文模板js语句
+    // eval(template) // 执行明文模板js语句
     meta.forEach((item, index) => {
       LODOP.SET_PRINT_STYLEA(item, "CONTENT", val[index]);
     })
@@ -88,7 +89,8 @@ export function getPrinters () {
   const count = LODOP.GET_PRINTER_COUNT()
   const printers = []
   for (let i = 0; i < count; i++) {
-    console.log(LODOP.GET_PRINTER_NAME(i))
+    console.log(LODOP.GET_PRINTER_NAME(i), 'name')
+    console.log(LODOP.GET_PRINTER_NAME('PaperSize'), 'PaperSize')
     printers.push(LODOP.GET_PRINTER_NAME(i))
   }
   sessionStorage.setItem('printers', JSON.stringify(printers))
@@ -99,8 +101,22 @@ export function setPrinter () {
   const LODOP = getLodop()
   console.log(LODOP.SET_PRINTER_INDEXA(printers[2]));
 }
-// 打印条形码
-export function printBarcode () {
+// 循环打印
+export function cyclePrint () {
   const LODOP = getLodop()
-
+  console.log(LODOP.GET_VALUE('ItemContent ', 'name'));
+  if (LODOP.CVERSION) LODOP.On_Return = function (TaskID, Value) {
+    console.log(Value);
+  };
+  // LODOP.PRINT_INIT()
+  // const template = sessionStorage.getItem('template')
+  // for (let val of dataList) {
+  //   //装载模板
+  //   // LODOP.ADD_PRINT_DATA("ProgramData", template); // 装载密文模板
+  //   eval(template) // 执行明文模板js语句
+  //   meta.forEach((item, index) => {
+  //     LODOP.SET_PRINT_STYLEA(item, "CONTENT", val[index]);
+  //   })
+  //   LODOP.PRINT()
+  // }
 }

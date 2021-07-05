@@ -7,7 +7,10 @@ import zhCN from 'antd/lib/locale/zh_CN';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import 'antd/dist/antd.css';
-import { CheckIsInstall, printDesign, getProgramData, DesignByPRGData, printWithStyle, createAllPage, getPrinters, setPrinter } from './print'
+import {
+  CheckIsInstall, printDesign, getProgramData, DesignByPRGData, printWithStyle, createAllPage, getPrinters, setPrinter,
+  cyclePrint,
+} from './print'
 import { data } from './data'
 moment.locale('zh-cn');
 
@@ -30,6 +33,7 @@ function App () {
         <Button onClick={createAllPage.bind(null, data)}>遍历数组分页打印</Button>
         <Button onClick={getPrinters}>获取打印机设备</Button>
         <Button onClick={setPrinter}>指定打印机</Button>
+        <Button onClick={cyclePrint}>循环打印</Button>
       </div>
     </ConfigProvider>
   );
