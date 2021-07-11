@@ -8,14 +8,13 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 import 'antd/dist/antd.css';
 import {
-  CheckIsInstall, printDesign, getProgramData, DesignByPRGData, printWithStyle, createAllPage, getPrinters, setPrinter,
-  cyclePrint, printPDF, createAllPage1
+  CheckIsInstall, printDesign, getProgramData, DesignByPRGData, printWithStyle, getPrinters, setPrinter,
+  printPDF, createAllPage, templateOfImg, embed
 } from './print'
 import { data } from './data'
 moment.locale('zh-cn');
 
 function App () {
-  const [examValue, setExamValue] = useState('')
   return (
     <ConfigProvider locale={zhCN}>
       ·现在测试一下: <a href="" onClick={(e) => {
@@ -31,11 +30,11 @@ function App () {
         <Button onClick={DesignByPRGData}>加载模板</Button>
         <Button onClick={printWithStyle}>打印包含样式</Button>
         <Button onClick={createAllPage.bind(null, data)}>遍历数组分页打印</Button>
-        <Button onClick={createAllPage1.bind(null, data)}>遍历数组分页打印1</Button>
         <Button onClick={getPrinters}>获取打印机设备</Button>
         <Button onClick={setPrinter}>指定打印机</Button>
-        <Button onClick={cyclePrint}>循环打印</Button>
         <Button onClick={printPDF}>打印PDF</Button>
+        <Button onClick={templateOfImg}>模板赋值图片链接</Button>
+        <Button onClick={embed}>embed标签打印pdf</Button>
       </div>
     </ConfigProvider>
   );
