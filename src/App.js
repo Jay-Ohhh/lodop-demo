@@ -1,5 +1,3 @@
-import logo from './logo.svg';
-import { useState } from 'react'
 import './App.css';
 import { ConfigProvider, Button } from 'antd';
 // 由于 antd 组件的默认文案是英文，所以需要修改为中文
@@ -9,7 +7,7 @@ import 'moment/locale/zh-cn';
 import 'antd/dist/antd.css';
 import {
   CheckIsInstall, printDesign, getProgramData, DesignByPRGData, printWithStyle, getPrinters, setPrinter,
-  printPDF, createAllPage, templateOfImg, embed
+  printPDF, createAllPage, templateOfImg, HTMLImg, printPDFCount, getPaperSize, setPageSize, repeat, test
 } from './print'
 import { data } from './data'
 moment.locale('zh-cn');
@@ -34,7 +32,12 @@ function App () {
         <Button onClick={setPrinter}>指定打印机</Button>
         <Button onClick={printPDF}>打印PDF</Button>
         <Button onClick={templateOfImg}>模板赋值图片链接</Button>
-        <Button onClick={embed}>embed标签打印pdf</Button>
+        <Button onClick={HTMLImg}>HTML加载图片</Button>
+        <Button onClick={printPDFCount}>指定份数打印</Button>
+        <Button onClick={setPageSize}>设置纸张</Button>
+        <Button onClick={getPaperSize}>获取设置纸张宽高</Button>
+        <Button onClick={repeat}>重复输出</Button>
+        <Button onClick={test}>test</Button>
       </div>
     </ConfigProvider>
   );
