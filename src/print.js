@@ -245,26 +245,33 @@ export function setPageSize () {
 }
 
 // 获取设置纸张宽高
-export function getPaperSize () {
+export function getPaperSize (pageSize) {
   const LODOP = getLodop()
-  LODOP.PRINT_INIT()
-  if (LODOP.blOneByone == true) {
-    console.log('有窗口已打开');
-    return
-  }
-  // 获取纸张宽高
-  let width, height;
-  // LODOP.SET_PRINT_PAGESIZE(1, 0, 0, "A4");
-  // LODOP.SET_PRINT_PAGESIZE(1, 0, 0, "B5 (JIS)");
-  LODOP.GET_VALUE('PRINTSETUP_PAGE_WIDTH', 0)
+  // LODOP.SET_PRINT_MODE('WINDOW_DEFPAGESIZE', "A3");
+  LODOP.ADD_PRINT_TEXT(33, 13, 625, 35, "本弹窗仅用作加载纸张大小，无需您任何操作，请点击右上角关闭按钮");
+  LODOP.SET_PRINT_STYLEA(0, "FontSize", 14);
+  LODOP.SET_PRINT_STYLEA(0, "FontColor", "#0080FF");
+  LODOP.SET_PRINT_STYLEA(0, "Horient", 2);
+  LODOP.SET_PREVIEW_WINDOW(1, 3, 0, 1000, 200)
+  LODOP.SET_PRINT_PAGESIZE(1, 0, 0, pageSize || "A4");
+  LODOP.PREVIEW()
   if (LODOP.CVERSION) {
     LODOP.On_Return = function (taskId, value) {
-      width = value / 10
-      LODOP.GET_VALUE('PRINTSETUP_PAGE_HEIGHT', 0)
-      LODOP.On_Return = function (taskId, value) {
-        height = value / 10
-        console.log(width, 'width');
-        console.log(height, 'height');
+      let pageWidth, pageHeight;
+      const LODOP = getLodop()
+      LODOP.GET_VALUE('PRINTSETUP_PAGE_WIDTH', 0) // 获取可打印宽度
+      if (LODOP.CVERSION) {
+        LODOP.On_Return = function (taskId, value) {
+          // value 单位是 0.1mm
+          pageWidth = value / 10
+          LODOP.GET_VALUE('PRINTSETUP_PAGE_HEIGHT', 0) // 获取可打印高度
+          LODOP.On_Return = function (taskId, value) {
+            // value 单位是 0.1mm
+            pageHeight = value / 10
+            console.log(`PageWidth: ${pageWidth} mm`);
+            console.log(`PageHeight: ${pageHeight} mm`);
+          }
+        }
       }
     }
   }
