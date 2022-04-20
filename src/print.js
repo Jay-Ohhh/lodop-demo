@@ -98,7 +98,6 @@ export function getProgramData () {
     // 这里将Value发送给后端保存
     // 暂用sessionStorage保存
     sessionStorage.setItem('template', Value)
-    console.log(Value);
   };
 };
 // 加载模板
@@ -175,6 +174,13 @@ export function getPrinters () {
     printers.push(name)
   }
   sessionStorage.setItem('printers', JSON.stringify(printers))
+  console.log(printers);
+  const pageSizeList = {}
+  printers.forEach(item => {
+    const tmp = LODOP.GET_PAGESIZES_LIST(item, ',');
+    pageSizeList[item] = tmp.split(',')
+  })
+  console.log(pageSizeList);
 }
 // 指定打印机
 export function setPrinter () {
@@ -194,7 +200,7 @@ export async function printPDF () {
   LODOP.ADD_PRINT_PDF(0, 0, "100%", "100%", demoDownloadPDF(httpsUrl));
   // LODOP.ADD_PRINT_PDF(0, 0, "100%", "100%", await axiosDownloadPDF(httpsUrl));
   LODOP.SET_PRINT_STYLEA(0, "PDFScalMode", 1);
-  LODOP.PREVIEW()
+  LODOP.PREVIEW();
 }
 
 // 指定份数打印
@@ -279,8 +285,8 @@ export function getPaperSize (pageSize) {
 
 // 重复输出
 // 注意单、双引号
-let sentence = "LODOP.ADD_PRINT_TEXT(100,100,50,10,'单号：');\nLODOP.SET_PRINT_STYLEA(0,'FontSize',8);\nLODOP.ADD_PRINT_TEXTA('aaa',100,130,100,100,1);\nLODOP.ADD_PRINT_TEXTA('bbb',100,160,100,100,2);\nLODOP.ADD_PRINT_TEXT(100,190,50,10,'货仓');\nLODOP.SET_PRINT_STYLEA(0,'FontSize',8);\nLODOP.ADD_PRINT_BARCODEA('code',120,100,100,50,'128A','123456789012');\nLODOP.ADD_PRINT_BARCODEA('code1',120,200,100,50,'128A','123456789012');\nLODOP.ADD_PRINT_HTM(180, 100, 178, 100,'123');\nLODOP.SET_PRINT_STYLEA(0,'ItemName','img');"
-// sentence = 'LODOP.ADD_PRINT_TEXT(100,100,50,10,"单号：");\nLODOP.SET_PRINT_STYLEA(0,"FontSize",8);\nLODOP.ADD_PRINT_TEXTA("aaa",100,130,100,100,1);\nLODOP.ADD_PRINT_TEXTA("bbb",100,160,100,100,2);\nLODOP.ADD_PRINT_TEXT(100,190,50,10,"货仓");\nLODOP.SET_PRINT_STYLEA(0,"FontSize",8);\nLODOP.ADD_PRINT_BARCODEA("code",120,100,100,50,"128A","123456789012");\nLODOP.ADD_PRINT_BARCODEA("code1",120,200,100,50,"128A","123456789012");\nLODOP.ADD_PRINT_HTM(180, 100, 178, 100,"123");\nLODOP.SET_PRINT_STYLEA(0,"ItemName","img");'
+let sentence = "LODOP.ADD_PRINT_TEXT(100,100,50,10,'aaa');\nLODOP.SET_PRINT_STYLEA(0,'FontSize',8);\nLODOP.ADD_PRINT_TEXTA('aaa',100,130,100,100,1);\nLODOP.ADD_PRINT_TEXTA('bbb',100,160,100,100,2);\nLODOP.ADD_PRINT_TEXT(100,190,50,10,'货仓');\nLODOP.SET_PRINT_STYLEA(0,'FontSize',8);\nLODOP.ADD_PRINT_BARCODEA('code',120,100,100,50,'128A','123456789012');\nLODOP.ADD_PRINT_BARCODEA('code1',120,200,100,50,'128A','123456789012');\nLODOP.ADD_PRINT_HTM(180, 100, 178, 100,'123');\nLODOP.SET_PRINT_STYLEA(0,'ItemName','img');"
+// sentence = 'LODOP.ADD_PRINT_TEXT(100,100,50,10,"aaa");\nLODOP.SET_PRINT_STYLEA(0,"FontSize",8);\nLODOP.ADD_PRINT_TEXTA("aaa",100,130,100,100,1);\nLODOP.ADD_PRINT_TEXTA("bbb",100,160,100,100,2);\nLODOP.ADD_PRINT_TEXT(100,190,50,10,"货仓");\nLODOP.SET_PRINT_STYLEA(0,"FontSize",8);\nLODOP.ADD_PRINT_BARCODEA("code",120,100,100,50,"128A","123456789012");\nLODOP.ADD_PRINT_BARCODEA("code1",120,200,100,50,"128A","123456789012");\nLODOP.ADD_PRINT_HTM(180, 100, 178, 100,"123");\nLODOP.SET_PRINT_STYLEA(0,"ItemName","img");'
 
 
 export function repeat () {
@@ -303,7 +309,7 @@ export function repeat () {
 export function repeat1 () {
   let pageWidth, pageHeight;
   // 单位 mm
-  let width = 50, height = 50
+  let width = 50, height = 50 // 单个标签宽高
   const LODOP = getLodop()
   LODOP.GET_VALUE('PRINTSETUP_SIZE_WIDTH', 0) // 获取可打印宽度
   if (LODOP.CVERSION) {
@@ -373,7 +379,7 @@ function multiTasks (params) {
 
     // 对没有设置类名的打印项设置间隔距离
     const replaceObj = {}
-    const reg = /(\((.[0-9]+,){4})/g
+    const reg = /(\((\s*[0-9]+,){4})/g
     for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
       const res = reg.exec(templateSentences)
       const search = res?.[0] // 匹配的结果如："(100,190,50,10,"  Top,Left,Width,Height
@@ -390,13 +396,15 @@ function multiTasks (params) {
       templateSentences = templateSentences.replace(k, replaceObj[k])
     }
 
+    const s = templateSentences;
+
     keys.forEach(key => {
       if (!keyValue[key]) {
         // 数据为null时，将其宽高设置为0（不显示）
         hideSentence = hideSentence + `LODOP.SET_PRINT_STYLEA('${key}', 'Width', 0);LODOP.SET_PRINT_STYLEA('${key}', 'Height', 0);LODOP.SET_PRINT_STYLEA('${key}', 'Content', null);LODOP.SET_PRINT_STYLEA('${key}', 'Top', -30);`
         return
       }
-      let s = templateSentences;
+
       if (keyValue[key]?.url) { // 对HTML项语句进行处理
         const regAdd = new RegExp(`(ADD_PRINT_HTM[\\s\\S]*?${key}{1}('|"))`) // LODOP.ADD_ 语句
         const res = regAdd.exec(keyIndex[key] ? s.slice(keyIndex[key]) : s)
@@ -410,30 +418,28 @@ function multiTasks (params) {
           if (params) {
             !keyIndex[key] && (keyIndex[key] = searchIndex)
             // 更改位置参数和内容值
-            // params[0] = Number(params[0]) + marginHeight
-            // params[1] = Number(params[1]) + marginLeft
             params[params.length - 1] = `'<img style="width:100%;" src=${keyValue[key].url} />');`
             // key.length + 2中的2是两个引号
             let replacement = search.slice(0, -(key.length + 2)) + search.slice(-(key.length + 2)).replace(key, `${key + i}abc`) // 更改类名
             replacement = replacement.replace(paramsString, params.join(','))
-            templateSentences = s.replace(search, replacement)
+            templateSentences = templateSentences.replace(search, replacement)
           }
         }
       } else { // 其它类型项
-        const regAdd = new RegExp(`(('|")${key}('|").*?;{1})`) // LODOP.ADD_ 语句
+        const regAdd = new RegExp(`(\\(('|")${key}('|").*?;{1})`) // LODOP.ADD_ 语句
         const res = regAdd.exec(keyIndex[key] ? s.slice(keyIndex[key]) : s)
-        // const res = regAdd.exec(s)
         const search = res?.[0] // 匹配到的语句
         const searchIndex = res?.['index'] // 匹配到的语句的索引
         if (search) {
           !keyIndex[key] && (keyIndex[key] = searchIndex)
           // [类名, Top, Left, Width, Height,..., 值); ]
-          const params = search.split(',')
-          params[0] = `'${key + i}abc'`
+          const params = search.slice(1).split(',')
+          params[0] = `('${key + i}abc'`
           params[1] = Number(params[1]) + marginHeight
           params[2] = Number(params[2]) + marginLeft
-          params[params.length - 1] = `'${keyValue[key] + i}');`
-          templateSentences = s.replace(search, params.join(','))
+          // JSON.stringify是为了保持换行符
+          params[params.length - 1] = JSON.stringify(keyValue[key] + i) + ');'
+          templateSentences = templateSentences.replace(search, params.join(','))
         }
       }
     })
@@ -446,18 +452,35 @@ function multiTasks (params) {
   LODOP.PRINT()
 }
 
+
 export function test () {
-  let s = "LODOP.ADD_PRINT_TEXT(100,100,50,10,'单号：');LODOP.ADD_PRINT_TEXT(100,190,50,10,'货仓');"
-  // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-  // 匹配的结果如："(100,190,50,10,"  Top,Left,Width,Height
-  const reg = /(\((.[0-9]+,){4})/g
-  for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
-    const res = reg.exec(s)
-    if (res) {
-      console.log(res);
-      console.log(reg.lastIndex);
-    } else {
-      break
+  const LODOP = getLodop()
+  const size = "Envelope #14"
+  LODOP.ADD_PRINT_TEXT(33, 13, 625, 35, "本弹窗仅用作加载纸张大小，无需您任何操作，请点击右上角关闭按钮");
+  LODOP.SET_PRINT_STYLEA(0, "FontSize", 14);
+  LODOP.SET_PRINT_STYLEA(0, "FontColor", "#0080FF");
+  LODOP.SET_PRINT_STYLEA(0, "Horient", 2);
+  LODOP.SET_PREVIEW_WINDOW(1, 3, 0, 1000, 200)
+  LODOP.SET_PRINTER_INDEXA("pdfFactory Pro")
+  LODOP.SET_PRINT_PAGESIZE(1, 0, 0, size);
+  LODOP.PREVIEW()
+  if (LODOP.CVERSION) {
+    LODOP.On_Return = function (taskId, value) {
+      let pageWidth, pageHeight;
+      // 单位 mm
+      LODOP.GET_VALUE('PRINTSETUP_PAGE_WIDTH', 0) // 获取可打印宽度
+      if (LODOP.CVERSION) {
+        LODOP.On_Return = function (taskId, value) {
+          // value 单位是 0.1mm
+          pageWidth = value / 10
+          LODOP.GET_VALUE('PRINTSETUP_PAGE_HEIGHT', 0) // 获取可打印高度
+          LODOP.On_Return = function (taskId, value) {
+            // value 单位是 0.1mm
+            pageHeight = value / 10
+            console.log(pageWidth, pageHeight, size);
+          }
+        }
+      }
     }
   }
 }
