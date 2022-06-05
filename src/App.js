@@ -27,6 +27,7 @@ function App () {
         <Button onClick={getProgramData}>保存模板</Button>
         <Button onClick={DesignByPRGData}>加载模板</Button>
         <Button onClick={printWithStyle}>打印包含样式</Button>
+        {/* 先设计和保存模板 */}
         <Button onClick={createAllPage.bind(null, data)}>遍历数组分页打印</Button>
         <Button onClick={getPrinters}>获取打印机设备和对应的纸张列表</Button>
         <Button onClick={setPrinter}>指定打印机</Button>

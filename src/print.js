@@ -455,32 +455,15 @@ function multiTasks (params) {
 
 export function test () {
   const LODOP = getLodop()
-  const size = "Envelope #14"
-  LODOP.ADD_PRINT_TEXT(33, 13, 625, 35, "本弹窗仅用作加载纸张大小，无需您任何操作，请点击右上角关闭按钮");
-  LODOP.SET_PRINT_STYLEA(0, "FontSize", 14);
-  LODOP.SET_PRINT_STYLEA(0, "FontColor", "#0080FF");
-  LODOP.SET_PRINT_STYLEA(0, "Horient", 2);
-  LODOP.SET_PREVIEW_WINDOW(1, 3, 0, 1000, 200)
+  // LODOP.ADD_PRINT_IMAGE(0, 0, '100%', '100%', `<img style='width:100%' src='https://img.zcool.cn/community/0147e86243ff520002c3290f77f99d.jpg@1280w_1l_2o_100sh.jpg'/>`)
+  LODOP.ADD_PRINT_HTML(
+    0,
+    0,
+    '100%',
+    '100%',
+    `<img style='width:100%' src='https://img.zcool.cn/community/0147e86243ff520002c3290f77f99d.jpg@1280w_1l_2o_100sh.jpg'/>`
+  );
   LODOP.SET_PRINTER_INDEXA("pdfFactory Pro")
-  LODOP.SET_PRINT_PAGESIZE(1, 0, 0, size);
+  LODOP.SET_PRINT_PAGESIZE(1, 0, 0, 'A4');
   LODOP.PREVIEW()
-  if (LODOP.CVERSION) {
-    LODOP.On_Return = function (taskId, value) {
-      let pageWidth, pageHeight;
-      // 单位 mm
-      LODOP.GET_VALUE('PRINTSETUP_PAGE_WIDTH', 0) // 获取可打印宽度
-      if (LODOP.CVERSION) {
-        LODOP.On_Return = function (taskId, value) {
-          // value 单位是 0.1mm
-          pageWidth = value / 10
-          LODOP.GET_VALUE('PRINTSETUP_PAGE_HEIGHT', 0) // 获取可打印高度
-          LODOP.On_Return = function (taskId, value) {
-            // value 单位是 0.1mm
-            pageHeight = value / 10
-            console.log(pageWidth, pageHeight, size);
-          }
-        }
-      }
-    }
-  }
 }
